@@ -16,7 +16,9 @@ const styles = {
 
 const IndexPage = () => {
   const [seconds, setSeconds] = useState(3659)
+  const [playState, setPlayState] = useState(false)
   return (
+    <>
     <div style={styles.wrapper}>
       <TaskInput />
       <div
@@ -26,6 +28,8 @@ const IndexPage = () => {
       <StopBtn />
       <TaskTimer seconds={seconds} />
     </div>
+    {playState && <p>Запущен</p>}
+    </>
   )
 }
 
