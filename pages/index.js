@@ -1,7 +1,10 @@
-import TaskTimer from "../components/TaskTimer";
-import PlayPauseBtn from "../components/PlayPauseBtn";
-import TaskInput from "../components/TaskInput";
-import StopBtn from "../components/StopBtn";
+import DisplayTimer from "../components/log/DisplayTimer";
+import DisplayLog from "../components/log/DisplayLog";
+import PlayPauseBtn from "../components/timer/PlayPauseBtn";
+import TaskInput from "../components/timer/TaskInput";
+import StopBtn from "../components/timer/StopBtn";
+import Menu from "../components/section/Menu"
+import {getLogs, addLog} from "../lib/api"
 import { useState, useEffect } from "react";
 
 const styles = {
@@ -11,11 +14,14 @@ const styles = {
     justifyContent: 'space-between',
     width: '500px',
     border: '1px solid black',
+  },
+  done_content: {
+    display: 'flex'
   }
 }
 
 const IndexPage = () => {
-  const [taskText, setTaskText] = useState('Сходить в магазин');
+  const [taskText, setTaskText] = useState('Напишите цель');
   const [seconds, setSeconds] = useState(0)
   const [playState, setPlayState] = useState(false)
   const [tick, setTick] = useState(0);
@@ -26,11 +32,17 @@ const IndexPage = () => {
   }
 
   const handleStop = () => {
+    const log = {
+      text: taskText,
+      seconds,
+      endTime: Math.floor(Date.now()/1000)
+    }
     setSeconds(0);
     setPlayState(false);
+    addLog(log);
     setTasks([
       ...tasks,
-      `${taskText} : ${seconds}`
+      log
     ]);
   }
 
@@ -41,6 +53,8 @@ const IndexPage = () => {
   }, [tick])
 
   useEffect(() => {
+    getLogs().then(logs => setTasks(logs))
+
     const interval = setInterval(() => {
       setTick(tick => tick + 1)
     }, 1000);
@@ -57,12 +71,13 @@ const IndexPage = () => {
       <div onClick = {handleStop}>
         <StopBtn />
       </div>
-      <TaskTimer seconds={seconds} />
+      <DisplayTimer seconds={seconds} />
     </div>
     {playState ? <p>Запущен</p> : <p>Остановлен</p>}
-    {!!tasks.length && (<ul>
-      {tasks.map((task, i) => <li key={i}>{task}</li>)}
-    </ul>)}
+    {!!tasks.length && (<div style = {styles.done_content}>
+      {tasks.map((task, i) => <DisplayLog log={task} key={i} />)}
+    </div>)}
+    <Menu/>
     </>
   )
 }
