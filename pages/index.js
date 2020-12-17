@@ -53,7 +53,10 @@ const IndexPage = () => {
   }, [tick])
 
   useEffect(() => {
-    getLogs().then(logs => setTasks(logs))
+    getLogs().then(data => {
+      const { items } = data;
+      setTasks(items);
+    }, [])
 
     const interval = setInterval(() => {
       setTick(tick => tick + 1)
@@ -74,7 +77,7 @@ const IndexPage = () => {
       <DisplayTimer seconds={seconds} />
     </div>
     {playState ? <p>Запущен</p> : <p>Остановлен</p>}
-    {!!tasks.length && (<div style = {styles.done_content}>
+    {(tasks && !!tasks.length) && (<div style = {styles.done_content}>
       {tasks.map((task, i) => <DisplayLog log={task} key={i} />)}
     </div>)}
     <Menu/>

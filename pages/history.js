@@ -21,11 +21,15 @@ const HistoryPage = () => {
     const [tasks, setTasks] = useState([])
     
     useEffect(() => {
-        getLogs().then(logs => setTasks(logs))}, [])
+        getLogs().then(data => {
+          const { items } = data;
+          setTasks(items)
+        });
+    }, [])
     return( 
     <> 
     <Menu/>
-    {!!tasks.length && (<div style = {styles.done_content}>
+    {(tasks && !!tasks.length) && (<div style = {styles.done_content}>
       {unionArray(tasks).map((task, i) => <DisplayLog log={task} key={i} />)}
     </div>)} 
     </>
